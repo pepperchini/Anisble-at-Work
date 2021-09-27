@@ -1,0 +1,27 @@
+---
+- name: Show me your VLAN
+  hosts: ios
+  become: yes
+  gather_facts: false
+  connection: local
+  # The lines below are optional. If you want to save your login info into the file you can but it is not necessary.
+  vars:
+    cli:
+      username: pepperchini
+      password: abc123
+      timeout: 100
+
+  tasks:
+    - name: Run show VLAN brief command and create a text file
+      cisco.ios.ios_command:
+        provider: "{{cli}}"
+        commands:
+          - show vlan brief
+      register: print_output
+
+    - debug: var=print_output
+
+    - name: Write to file
+      ansible.builtin.copy:
+         content: "{{print_output}}"
+         dest: /etc/ansible/MySwitchShowCommandOutput.txt
